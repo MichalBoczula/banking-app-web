@@ -2,7 +2,7 @@ import { ofType } from 'redux-observable';
 import { ajax } from 'rxjs/ajax';
 import { map, catchError, switchMap } from 'rxjs/operators';
 import { of } from 'rxjs';
-import { fetchCustomerAccountsRequest, fetchCustomerAccountsSuccess, fetchCustomerAccountsFailure } from '../actions/CustomerActions';
+import { fetchCustomerAccountsSuccess, fetchCustomerAccountsFailure } from '../actions/CustomerActions';
 
 const customerEpic = (action$) =>
     action$.pipe(
