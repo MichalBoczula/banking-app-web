@@ -1,10 +1,8 @@
 import { combineEpics } from 'redux-observable';
-import customerEpic from './CustomerEpic';
-import fetchCustomerPersonalDataEpic from './CustomerPersonalDataEpic';
+import customerEpics from './CustomerEpic';
 
 const rootEpic = combineEpics(
-    customerEpic,
-    fetchCustomerPersonalDataEpic
+    customerEpics,
 );
 
 export default rootEpic;

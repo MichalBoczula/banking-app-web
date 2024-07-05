@@ -1,12 +1,20 @@
-import { ofType } from 'redux-observable';
+// src/epics/customerEpics.js
+import { ofType, combineEpics } from 'redux-observable';
 import { ajax } from 'rxjs/ajax';
 import { map, catchError, switchMap } from 'rxjs/operators';
 import { of } from 'rxjs';
-import { fetchCustomerAccountsSuccess, fetchCustomerAccountsFailure } from '../actions/CustomerActions';
+import {
+    fetchCustomerAccountsRequest,
+    fetchCustomerAccountsSuccess,
+    fetchCustomerAccountsFailure,
+    fetchCustomerPersonalDataRequest,
+    fetchCustomerPersonalDataSuccess,
+    fetchCustomerPersonalDataFailure
+} from '../slices/CustomerSlice';
 
-const customerEpic = (action$) =>
+const fetchCustomerAccountsEpic = (action$) =>
     action$.pipe(
-        ofType('FETCH_CUSTOMER_ACCOUNTS_REQUEST'),
+        ofType(fetchCustomerAccountsRequest.type),
         switchMap(action =>
             ajax.getJSON(`http://localhost:8080/CustomerData/CustomerAccounts/${action.payload}`).pipe(
                 map(response => {
@@ -18,4 +26,20 @@ const customerEpic = (action$) =>
         )
     );
 
-export default customerEpic;
+const fetchCustomerPersonalDataEpic = (action$) =>
+    action$.pipe(
+        ofType(fetchCustomerPersonalDataRequest.type),
+        switchMap(action =>
+            ajax.getJSON(`http://localhost:8080/CustomerData/CustomerPersonalData/${action.payload}`).pipe(
+                map(response => fetchCustomerPersonalDataSuccess(response)),
+                catchError(error => of(fetchCustomerPersonalDataFailure(error.message)))
+            )
+        )
+    );
+
+const customerEpics = combineEpics(
+    fetchCustomerAccountsEpic,
+    fetchCustomerPersonalDataEpic
+);
+
+export default customerEpics;

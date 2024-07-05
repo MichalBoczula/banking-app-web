@@ -1,6 +1,9 @@
 import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { fetchCustomerAccountsRequest, fetchCustomerPersonalDataRequest } from '../../actions/CustomerActions';
+import {
+    fetchCustomerAccountsRequest,
+    fetchCustomerPersonalDataRequest
+} from '../../slices/CustomerSlice';
 
 const CustomerAccounts = ({ customerId }) => {
     const dispatch = useDispatch();
