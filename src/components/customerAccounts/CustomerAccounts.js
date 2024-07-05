@@ -12,7 +12,7 @@ const CustomerAccounts = ({ customerId }) => {
     useEffect(() => {
         dispatch(fetchCustomerAccountsRequest(customerId));
         dispatch(fetchCustomerPersonalDataRequest(customerId));
-    }, [dispatch, customerId]);
+    }, [customerId]);
 
     return (
         <div>
