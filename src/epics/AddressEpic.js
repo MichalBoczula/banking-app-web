@@ -5,7 +5,16 @@ import { of } from 'rxjs';
 import {
     fetchAddressByIdRequest,
     fetchAddressByIdSuccess,
-    fetchAddressByIdFailure
+    fetchAddressByIdFailure,
+    addAddressRequest,
+    addAddressSuccess,
+    addAddressFailure,
+    updateAddressRequest,
+    updateAddressSuccess,
+    updateAddressFailure,
+    deleteAddressRequest,
+    deleteAddressSuccess,
+    deleteAddressFailure
 } from '../slices/AddressSlice';
 
 const fetchAddressByIdEpic = (action$) =>
@@ -23,41 +32,56 @@ const fetchAddressByIdEpic = (action$) =>
         })
     );
 
-// const addAddressEpic = (action$) =>
-//     action$.pipe(
-//         ofType(addAddressRequest.type),
-//         switchMap(action =>
-//             ajax.post('http://localhost:8080/Address', action.payload, { 'Content-Type': 'application/json' }).pipe(
-//                 map(response => addAddressSuccess(response.response)),
-//                 catchError(error => of(addAddressFailure(error.message)))
-//             )
-//         )
-//     );
+const addAddressEpic = (action$) =>
+    action$.pipe(
+        ofType(addAddressRequest.type),
+        switchMap(action =>
+            ajax.post('http://localhost:8080/Address', action.payload, { 'Content-Type': 'application/json' }).pipe(
+                tap(response => console.log('API response:', response)),
+                map(response => addAddressSuccess(response.response)),
+                catchError(error => {
+                    console.error('API error:', error);
+                    return of(addAddressFailure(error.message));
+                })
+            )
+        )
+    );
 
-// const updateAddressEpic = (action$) =>
-//     action$.pipe(
-//         ofType(updateAddressRequest.type),
-//         switchMap(action =>
-//             ajax.put(`http://localhost:8080/Address/${action.payload.id}`, action.payload, { 'Content-Type': 'application/json' }).pipe(
-//                 map(response => updateAddressSuccess(response.response)),
-//                 catchError(error => of(updateAddressFailure(error.message)))
-//             )
-//         )
-//     );
+const updateAddressEpic = (action$) =>
+    action$.pipe(
+        ofType(updateAddressRequest.type),
+        switchMap(action =>
+            ajax.put(`http://localhost:8080/Address/${action.payload.id}`, action.payload, { 'Content-Type': 'application/json' }).pipe(
+                tap(response => console.log('API response:', response)),
+                map(response => updateAddressSuccess(response.response)),
+                catchError(error => {
+                    console.error('API error:', error);
+                    return of(updateAddressFailure(error.message));
+                })
+            )
+        )
+    );
 
-// const deleteAddressEpic = (action$) =>
-//     action$.pipe(
-//         ofType(deleteAddressRequest.type),
-//         switchMap(action =>
-//             ajax.delete(`http://localhost:8080/Address/${action.payload}`).pipe(
-//                 map(() => deleteAddressSuccess(action.payload)),
-//                 catchError(error => of(deleteAddressFailure(error.message)))
-//             )
-//         )
-//     );
+const deleteAddressEpic = (action$) =>
+    action$.pipe(
+        ofType(deleteAddressRequest.type),
+        switchMap(action =>
+            ajax.delete(`http://localhost:8080/Address/${action.payload}`).pipe(
+                tap(response => console.log('API response:', response)),
+                map(() => deleteAddressSuccess(action.payload)),
+                catchError(error => {
+                    console.error('API error:', error);
+                    return of(deleteAddressFailure(error.message));
+                })
+            )
+        )
+    );
 
 const addressEpics = combineEpics(
-    fetchAddressByIdEpic
+    fetchAddressByIdEpic,
+    addAddressEpic,
+    updateAddressEpic,
+    deleteAddressEpic
 );
 
 export default addressEpics;
