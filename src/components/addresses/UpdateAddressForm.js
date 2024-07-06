@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { updateAddressRequest, fetchAddressByIdRequest } from '../../slices/AddressSlice';
+import { updateAddressRequest, fetchAddressByIdRequest, hideNotification } from '../../slices/AddressSlice';
+import Notification from '../common/Notification';
 
 const UpdateAddressForm = ({ addressId }) => {
     const dispatch = useDispatch();
+    const notification = useSelector(state => state.address.notification);
     const { selectedAddress, loading, error } = useSelector(state => state.address);
     const [address, setAddress] = useState({
         street: '',
@@ -40,6 +42,7 @@ const UpdateAddressForm = ({ addressId }) => {
 
     return (
         <>
+            <Notification message={notification.message} type={notification.type} onClose={() => dispatch(hideNotification())} />            <h4>AddAddressForm</h4>
             <h3>UpdateAddressForm</h3>
             <form onSubmit={handleSubmit}>
                 <input name="street" value={address.street} onChange={handleChange} placeholder="Street" />

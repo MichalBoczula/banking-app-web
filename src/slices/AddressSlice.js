@@ -5,6 +5,10 @@ const initialState = {
     selectedAddress: null,
     loading: false,
     error: '',
+    notification: {
+        message: '',
+        type: '',
+    },
 };
 
 const addressSlice = createSlice({
@@ -58,6 +62,15 @@ const addressSlice = createSlice({
             state.loading = false;
             state.error = action.payload;
         },
+        showSuccessNotification: (state, action) => {
+            state.notification = { message: action.payload, type: 'success' };
+        },
+        showErrorNotification: (state, action) => {
+            state.notification = { message: action.payload, type: 'error' };
+        },
+        hideNotification: (state) => {
+            state.notification = { message: '', type: '' };
+        },
     },
 });
 
@@ -74,6 +87,9 @@ export const {
     deleteAddressRequest,
     deleteAddressSuccess,
     deleteAddressFailure,
+    showSuccessNotification,
+    showErrorNotification,
+    hideNotification,
 } = addressSlice.actions;
 
 export default addressSlice.reducer;

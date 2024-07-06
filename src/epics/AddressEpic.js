@@ -1,6 +1,6 @@
 import { ofType, combineEpics } from 'redux-observable';
 import { ajax } from 'rxjs/ajax';
-import { map, catchError, switchMap, tap } from 'rxjs/operators';
+import { map, catchError, switchMap, tap, concatMap } from 'rxjs/operators';
 import { of } from 'rxjs';
 import {
     fetchAddressByIdRequest,
@@ -14,7 +14,9 @@ import {
     updateAddressFailure,
     deleteAddressRequest,
     deleteAddressSuccess,
-    deleteAddressFailure
+    deleteAddressFailure,
+    showSuccessNotification,
+    showErrorNotification,
 } from '../slices/AddressSlice';
 
 const fetchAddressByIdEpic = (action$) =>
@@ -38,10 +40,13 @@ const addAddressEpic = (action$) =>
         switchMap(action =>
             ajax.post('http://localhost:8080/Address', action.payload, { 'Content-Type': 'application/json' }).pipe(
                 tap(response => console.log('API response:', response)),
-                map(response => addAddressSuccess(response.response)),
+                concatMap(response => [
+                    addAddressSuccess(response.response),
+                    showSuccessNotification('Address added successfully!'),
+                ]),
                 catchError(error => {
                     console.error('API error:', error);
-                    return of(addAddressFailure(error.message));
+                    return of(addAddressFailure(error.message), showErrorNotification(error.message));
                 })
             )
         )
@@ -53,10 +58,13 @@ const updateAddressEpic = (action$) =>
         switchMap(action =>
             ajax.put(`http://localhost:8080/Address/${action.payload.id}`, action.payload, { 'Content-Type': 'application/json' }).pipe(
                 tap(response => console.log('API response:', response)),
-                map(response => updateAddressSuccess(response.response)),
+                concatMap(() => [
+                    deleteAddressSuccess(action.payload),
+                    showSuccessNotification('Address updated successfully!'),
+                ]),
                 catchError(error => {
                     console.error('API error:', error);
-                    return of(updateAddressFailure(error.message));
+                    return of(deleteAddressFailure(error.message), showErrorNotification(error.message));
                 })
             )
         )
@@ -68,10 +76,13 @@ const deleteAddressEpic = (action$) =>
         switchMap(action =>
             ajax.delete(`http://localhost:8080/Address/${action.payload}`).pipe(
                 tap(response => console.log('API response:', response)),
-                map(() => deleteAddressSuccess(action.payload)),
+                concatMap(() => [
+                    deleteAddressSuccess(action.payload),
+                    showSuccessNotification('Address deleted successfully!'),
+                ]),
                 catchError(error => {
                     console.error('API error:', error);
-                    return of(deleteAddressFailure(error.message));
+                    return of(deleteAddressFailure(error.message), showErrorNotification(error.message));
                 })
             )
         )

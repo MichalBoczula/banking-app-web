@@ -15,7 +15,6 @@ const AddressDetails = ({ addressId }) => {
     }, [addressId]);
 
     if (loading) return <p>Loading...</p>;
-    if (error) return <p>Error: {error}</p>;
     if (!selectedAddress) return <p>No address found.</p>;
 
     const statusMap = {
